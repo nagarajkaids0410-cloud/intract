@@ -11,7 +11,9 @@ function resolveConnectionString(rawUrl: string): string {
   if (match) {
     const [, protocol, user, password, projectRef, dbname] = match;
     const poolerUser = user.includes('.') ? user : `${user}.${projectRef}`;
-    const poolerHost = `aws-0-ap-northeast-1.pooler.supabase.com`;
+    // If the old project was Tokyo (ap-northeast-1), keep it; otherwise default to Mumbai (ap-south-1)
+    const region = projectRef === 'zzgyllrljjzvzpcxcalz' ? 'ap-northeast-1' : 'ap-south-1';
+    const poolerHost = `aws-0-${region}.pooler.supabase.com`;
     return `${protocol}${poolerUser}:${password}@${poolerHost}:5432/${dbname}`;
   }
   return rawUrl;
