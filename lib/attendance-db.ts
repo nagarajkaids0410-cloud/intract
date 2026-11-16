@@ -42,6 +42,12 @@ export async function syncAttendanceWithDb(): Promise<AttendanceRecord[]> {
           inMemoryAttendance.push(rec);
         }
       }
+    } else {
+      // Auto-seed file attendance if new database is empty
+      const localAttendance = readDB();
+      for (const rec of localAttendance) {
+        await saveAttendanceToPostgres(rec);
+      }
     }
   } catch (err) {
     console.warn('[ATTENDANCE-DB] Failed to sync attendance from Supabase:', err);

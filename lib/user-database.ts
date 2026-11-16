@@ -68,6 +68,12 @@ export async function syncUsersWithDb(): Promise<StoredUser[]> {
         }
       }
       console.log(`[USER-DB] Successfully synchronized ${users.length} users from Supabase`);
+    } else {
+      // Database is empty (e.g. brand new Supabase project) - auto-seed initial users
+      for (const u of users) {
+        await saveUserToPostgres(u);
+      }
+      console.log(`[USER-DB] Auto-seeded new Supabase database with ${users.length} users`);
     }
   } catch (err) {
     console.warn('[USER-DB] Failed to sync users from Supabase, using memory store:', err);

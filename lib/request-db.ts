@@ -39,6 +39,12 @@ export async function syncRequestsWithDb(): Promise<RequestItem[]> {
           inMemoryRequests.push(req);
         }
       }
+    } else {
+      // Auto-seed file requests if new database is empty
+      const localRequests = readDB();
+      for (const req of localRequests) {
+        await saveRequestToPostgres(req);
+      }
     }
   } catch (err) {
     console.warn('[REQUEST-DB] Failed to sync requests from Supabase:', err);
