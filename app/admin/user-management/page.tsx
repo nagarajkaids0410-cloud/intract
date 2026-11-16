@@ -8,6 +8,7 @@ import { Search, Filter, CheckCircle, XCircle, Clock, Users as UsersIcon, UserCh
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth-context';
 import { exportToExcel } from '@/lib/excel-export';
+import BharathUserActions from '@/components/bharath-user-management-actions';
 
 export default function UserManagement() {
   const { user: currentUser } = useAuth();
@@ -26,21 +27,21 @@ export default function UserManagement() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [guideSelections, setGuideSelections] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('/api/admin/users');
-        if (!response.ok) return;
-        const data = await response.json();
-        setUsers(data.users || []);
-      } catch (error) {
-        console.error('User fetch error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/admin/users');
+      if (!response.ok) return;
+      const data = await response.json();
+      setUsers(data.users || []);
+    } catch (error) {
+      console.error('User fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUsers();
     const interval = setInterval(fetchUsers, 20000);
     return () => clearInterval(interval);
@@ -440,6 +441,15 @@ export default function UserManagement() {
                               Reactivate
                             </Button>
                           )}
+                        </div>
+
+                        {/* Bharath (Founder) Exclusive Actions: Download Data & Delete Account */}
+                        <div className="flex justify-center mt-1">
+                          <BharathUserActions
+                            targetUser={user}
+                            currentUser={currentUser}
+                            onUserDeleted={fetchUsers}
+                          />
                         </div>
                       </td>
                     </tr>
