@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assertBharathAccess } from '@/lib/bharath-access';
+import { assertBharathAccess } from '@/lib/bharath-access-server';
 import { findUserById, syncUsersWithDb } from '@/lib/user-database';
 import { syncAttendanceWithDb } from '@/lib/attendance-db';
 import { syncRequestsWithDb } from '@/lib/request-db';

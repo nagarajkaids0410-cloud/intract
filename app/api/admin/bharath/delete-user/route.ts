@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assertBharathAccess, isBharathUser } from '@/lib/bharath-access';
+import { assertBharathAccess } from '@/lib/bharath-access-server';
+import { isBharathUser } from '@/lib/bharath-access';
 import { findUserById, syncUsersWithDb, denyUser, deleteUserFromPostgres } from '@/lib/user-database';
 import { addAuditEntry } from '@/lib/audit-log';
 

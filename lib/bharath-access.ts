@@ -1,10 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getSessionIdentity } from '@/lib/session';
-import { findUserById, syncUsersWithDb } from '@/lib/user-database';
-
 /**
- * Checks if a given user object represents Golla Kumar Bharath (Founder).
+ * Pure client-safe utility to check if a user is Golla Kumar Bharath (Founder).
  * Verified against role, employeeId, id, username, or email.
+ * This file has NO server/database dependencies so it can be safely used in 'use client' components.
  */
 export function isBharathUser(
   user?: {
@@ -32,58 +29,4 @@ export function isBharathUser(
     username === 'kumar' ||
     email === 'gollakumarbharath@suryas.in'
   );
-}
-
-/**
- * Server-side guard to verify that the incoming request is authenticated
- * and belongs specifically to Bharath.
- */
-export async function assertBharathAccess(
-  request: NextRequest
-): Promise<{ success: true; bharath: { id: string; username: string; role: string } } | { success: false; response: NextResponse }> {
-  const identity = getSessionIdentity(request);
-
-  if (!identity) {
-    // If running in development or custom auth header fallback:
-    const authHeader = request.headers.get('x-user-id');
-    if (authHeader) {
-      await syncUsersWithDb();
-      const fallbackUser = findUserById(authHeader);
-      if (fallbackUser && isBharathUser(fallbackUser)) {
-        return {
-          success: true,
-          bharath: { id: fallbackUser.id, username: fallbackUser.username, role: fallbackUser.role },
-        };
-      }
-    }
-    return {
-      success: false,
-      response: NextResponse.json(
-        { error: 'Authentication required. Please sign in.' },
-        { status: 401 }
-      ),
-    };
-  }
-
-  await syncUsersWithDb();
-  const liveUser = findUserById(identity.userId);
-
-  if (!isBharathUser(identity) && !isBharathUser(liveUser)) {
-    return {
-      success: false,
-      response: NextResponse.json(
-        { error: 'Access denied: This feature is exclusively available for Bharath (Founder).' },
-        { status: 403 }
-      ),
-    };
-  }
-
-  return {
-    success: true,
-    bharath: {
-      id: identity.userId,
-      username: identity.username,
-      role: identity.role,
-    },
-  };
 }
