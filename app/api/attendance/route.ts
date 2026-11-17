@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
   try {
     await syncAttendanceWithDb();
-    const records = getAttendanceForUser(auth.id);
+    const records = getAttendanceForUser(auth.id, auth.username);
     return NextResponse.json({ success: true, today: indiaDate(), records });
   } catch (error) {
     console.error('Attendance fetch failed:', error);
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
     const guideUsername = guide?.username.toLowerCase();
     const approvalChain = getApprovalChainForUser(auth.username, auth.role, 'attendance-report', guideUsername);
-    const attendance = getAttendanceForUser(auth.id)
+    const attendance = getAttendanceForUser(auth.id, auth.username)
       .filter((record) => record.date >= fromDate && record.date <= toDate);
     const identifiers = generateRequestIdentifiers();
     const report: RequestItem = {
