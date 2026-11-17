@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 let pool: Pool | null = null;
 let initialized = false;
 
-function resolveConnectionString(rawUrl: string): string {
+export function resolveConnectionString(rawUrl: string): string {
   // Direct Supabase connections (db.<project-ref>.supabase.co:5432) are IPv6-only on Free tier.
   // Serverless functions (Netlify / AWS Lambda) do not have IPv6 outbound routing.
   // Transform to the IPv4-compatible Supabase connection pooler host automatically:
